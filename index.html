@@ -329,15 +329,15 @@
 // ── Spotify track IDs ─────────────────────────────────────────
 const SPOTIFY_IDS = {
   HOLIDAY:    "49ul7T6QlHsbnwYYNXE87O",   // Madonna – Holiday (1983)
-  INVISIBLE:  "170Xk9uyoGQKoJcRgE0jZk",   // Alison Moyet – Invisible (1984)
+  INTOTHEGROOVE: "3y2Y3Bc6GDxAWAMIpbW7RU", // Madonna – Into the Groove (1985)
   EVERYWHERE: "1prZ0pr6XoRCxcrC3MCL0M",   // Fleetwood Mac – Everywhere (1987)
   RELAX:      "2ewWHECQ6LRCqd659StkHM",   // Frankie Goes to Hollywood – Relax (1983)
   NIKITA:     "3G0ENKW9vzV0SuYKaWFflI",   // Elton John – Nikita (1985)
   AFRICA:     "2374M0fQpWi3dLnB54qaLX",   // Toto – Africa (1982)
   ALONE:      "54b8qPFqYqIndfdxiLApea",   // Heart – Alone (1987)
-  ROSANNA:    "6Nn2I9w1k9SyqxRFfhsiu5",   // Toto – Rosanna (1982)
+  RESPECTABLE: "3G7e3Nd4brQGHBQ2cpe6Kc", // Mel & Kim – Respectable (1987)
   LUKA:       "5yMXAaSvxo12QkYU75Ixv0",   // Suzanne Vega – Luka (1987)
-  INVINCIBLE: "2kFCYlFRuC7YqM5stlM9fH",   // Pat Benatar – Invincible (1985)
+  IWANTTOBREAKFREE: "7h2yhVxcZOGyQdOwD4Hu8J", // Queen – I Want to Break Free (1984)
   NOTORIOUS:  "1pkXWlpBjeOp9J6gGCHH02",   // Duran Duran – Notorious (1986)
   KYRIE:      "2tlM8eusJpp3Z97GM0mVVf",   // Mr. Mister – Kyrie (1985)
   SHOUT:      "78pWJBORGGzubvuVOVo2Vt",   // Tears for Fears – Shout (1984)
@@ -422,21 +422,21 @@ function toggleSpotify(word, btn) {
 
 // ── Crossword data ───────────────────────────────────────────
 const CW = {
-  rows: 18, cols: 19,
+  rows: 23, cols: 17,
   words: [
-    {word:"ALONE",      row:1,  col:11, dir:"down",   num:1,  clue:"Heart (1987)",                      sOrd:7,  sRow:1,  sCol:11 },
-    {word:"INVINCIBLE", row:2,  col:3,  dir:"across", num:2,  clue:"Pat Benatar (1985)",                sOrd:10, sRow:2,  sCol:3  },
-    {word:"NOTORIOUS",  row:2,  col:4,  dir:"down",   num:3,  clue:"Duran Duran (1986)",                sOrd:11, sRow:2,  sCol:4  },
-    {word:"ROSANNA",    row:4,  col:6,  dir:"across", num:4,  clue:"Toto (1982)",                       sOrd:8,  sRow:4,  sCol:6  },
-    {word:"EVERYWHERE", row:6,  col:1,  dir:"across", num:5,  clue:"Fleetwood Mac (1987)",              sOrd:3,  sRow:6,  sCol:1  },
-    {word:"SHOUT",      row:10, col:4,  dir:"across", num:6,  clue:"Tears for Fears (1984)",            sOrd:13, sRow:10, sCol:4  },
-    {word:"HOLIDAY",    row:10, col:5,  dir:"down",   num:7,  clue:"Madonna (1983)",                    sOrd:1,  sRow:10, sCol:5  },
-    {word:"NIKITA",     row:10, col:10, dir:"down",   num:8,  clue:"Elton John (1985)",                 sOrd:5,  sRow:10, sCol:10 },
-    {word:"KYRIE",      row:10, col:13, dir:"down",   num:9,  clue:"Mr. Mister (1985)",                 sOrd:12, sRow:10, sCol:13 },
-    {word:"RELAX",      row:12, col:3,  dir:"across", num:10, clue:"Frankie Goes to Hollywood (1983)",  sOrd:4,  sRow:12, sCol:3  },
-    {word:"INVISIBLE",  row:13, col:10, dir:"across", num:11, clue:"Alison Moyet (1984)",               sOrd:2,  sRow:13, sCol:10 },
-    {word:"LUKA",       row:13, col:17, dir:"down",   num:12, clue:"Suzanne Vega (1987)",               sOrd:9,  sRow:13, sCol:17 },
-    {word:"AFRICA",     row:15, col:5,  dir:"across", num:13, clue:"Toto (1982)",                       sOrd:6,  sRow:15, sCol:5  }
+    {word:"NIKITA",           row:1,  col:13, dir:"down",   num:1,  clue:"Elton John (1985)",                sOrd:5,  sRow:1,  sCol:13 },
+    {word:"NOTORIOUS",        row:2,  col:4,  dir:"down",   num:2,  clue:"Duran Duran (1986)",                sOrd:11, sRow:2,  sCol:4  },
+    {word:"LUKA",             row:3,  col:8,  dir:"down",   num:3,  clue:"Suzanne Vega (1987)",               sOrd:9,  sRow:3,  sCol:8  },
+    {word:"INTOTHEGROOVE",    row:4,  col:2,  dir:"down",   num:4,  clue:"Madonna (1985)",                    sOrd:2,  sRow:4,  sCol:2  },
+    {word:"AFRICA",           row:6,  col:8,  dir:"across", num:5,  clue:"Toto (1982)",                       sOrd:6,  sRow:6,  sCol:8  },
+    {word:"IWANTTOBREAKFREE", row:6,  col:11, dir:"down",   num:6,  clue:"Queen (1984)",                      sOrd:10, sRow:6,  sCol:11 },
+    {word:"HOLIDAY",          row:7,  col:1,  dir:"across", num:7,  clue:"Madonna (1983)",                    sOrd:1,  sRow:7,  sCol:1  },
+    {word:"ALONE",            row:7,  col:6,  dir:"down",   num:8,  clue:"Heart (1987)",                      sOrd:7,  sRow:7,  sCol:6  },
+    {word:"KYRIE",            row:7,  col:15, dir:"down",   num:9,  clue:"Mr. Mister (1985)",                 sOrd:12, sRow:7,  sCol:15 },
+    {word:"RELAX",            row:8,  col:8,  dir:"across", num:10, clue:"Frankie Goes to Hollywood (1983)",  sOrd:4,  sRow:8,  sCol:8  },
+    {word:"RESPECTABLE",      row:11, col:5,  dir:"across", num:11, clue:"Mel & Kim (1987)",                  sOrd:8,  sRow:11, sCol:5  },
+    {word:"SHOUT",            row:11, col:7,  dir:"down",   num:12, clue:"Tears for Fears (1984)",            sOrd:13, sRow:11, sCol:7  },
+    {word:"EVERYWHERE",       row:11, col:9,  dir:"down",   num:13, clue:"Fleetwood Mac (1987)",              sOrd:3,  sRow:11, sCol:9  }
   ]
 };
 

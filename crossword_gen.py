@@ -15,15 +15,15 @@ OUTPUT_JSON = os.path.join(SCRIPT_DIR, 'crossword_data.json')
 # Secret message: H-I-E-R-N-A-A-R-L-I-N-K-S
 WORDS_DATA = [
     {"word": "HOLIDAY",    "secret_pos": 0, "clue": "Madonna (1983)",                   "secret": "H"},
-    {"word": "INVISIBLE",  "secret_pos": 0, "clue": "Alison Moyet (1984)",              "secret": "I"},
+    {"word": "INTOTHEGROOVE", "secret_pos": 0, "clue": "Madonna (1985)",               "secret": "I"},
     {"word": "EVERYWHERE", "secret_pos": 0, "clue": "Fleetwood Mac (1987)",             "secret": "E"},
     {"word": "RELAX",      "secret_pos": 0, "clue": "Frankie Goes to Hollywood (1983)", "secret": "R"},
     {"word": "NIKITA",     "secret_pos": 0, "clue": "Elton John (1985)",                "secret": "N"},
     {"word": "AFRICA",     "secret_pos": 0, "clue": "Toto (1982)",                      "secret": "A"},
     {"word": "ALONE",      "secret_pos": 0, "clue": "Heart (1987)",                     "secret": "A"},
-    {"word": "ROSANNA",    "secret_pos": 0, "clue": "Toto (1982)",                      "secret": "R"},
+    {"word": "RESPECTABLE", "secret_pos": 0, "clue": "Mel & Kim (1987)",               "secret": "R"},
     {"word": "LUKA",       "secret_pos": 0, "clue": "Suzanne Vega (1987)",              "secret": "L"},
-    {"word": "INVINCIBLE", "secret_pos": 0, "clue": "Pat Benatar (1985)",               "secret": "I"},
+    {"word": "IWANTTOBREAKFREE", "secret_pos": 0, "clue": "Queen (1984)",              "secret": "I"},
     {"word": "NOTORIOUS",  "secret_pos": 0, "clue": "Duran Duran (1986)",               "secret": "N"},
     {"word": "KYRIE",      "secret_pos": 0, "clue": "Mr. Mister (1985)",                "secret": "K"},
     {"word": "SHOUT",      "secret_pos": 0, "clue": "Tears for Fears (1984)",           "secret": "S"},
