@@ -5,23 +5,28 @@ Each word's first letter contributes to the secret message.
 """
 
 import random
+import os
+
+# Pad relatief aan dit script — werkt op elke machine
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+OUTPUT_JSON = os.path.join(SCRIPT_DIR, 'crossword_data.json')
 
 # Words and their metadata
 # Secret message: H-I-E-R-N-A-A-R-L-I-N-K-S
 WORDS_DATA = [
-    {"word": "HOLIDAY",  "secret_pos": 0, "clue": "Madonna (1983)",                        "secret": "H"},
-    {"word": "ISLANDS",  "secret_pos": 0, "clue": "Kenny Rogers & Dolly Parton (1983)",    "secret": "I"},
-    {"word": "EASY",     "secret_pos": 0, "clue": "Phil Collins & Philip Bailey (1984)",   "secret": "E"},
-    {"word": "RELAX",    "secret_pos": 0, "clue": "Frankie Goes to Hollywood (1983)",      "secret": "R"},
-    {"word": "NENA",     "secret_pos": 0, "clue": "99 Luftballons (1983)",                 "secret": "N"},
-    {"word": "AFRICA",   "secret_pos": 0, "clue": "Toto (1982)",                           "secret": "A"},
-    {"word": "ALONE",    "secret_pos": 0, "clue": "Heart (1987)",                          "secret": "A"},
-    {"word": "RADIO",    "secret_pos": 0, "clue": "Queen (1984)",                          "secret": "R"},
-    {"word": "LADY",     "secret_pos": 0, "clue": "Chris de Burgh (1986)",                 "secret": "L"},
-    {"word": "IVORY",    "secret_pos": 0, "clue": "Paul McCartney & Stevie Wonder (1982)", "secret": "I"},
-    {"word": "NOTHING",  "secret_pos": 0, "clue": "Starship (1987)",                       "secret": "N"},
-    {"word": "KARMA",    "secret_pos": 0, "clue": "Culture Club (1983)",                   "secret": "K"},
-    {"word": "SHOUT",    "secret_pos": 0, "clue": "Tears for Fears (1984)",                "secret": "S"},
+    {"word": "HOLIDAY",    "secret_pos": 0, "clue": "Madonna (1983)",                   "secret": "H"},
+    {"word": "INVISIBLE",  "secret_pos": 0, "clue": "Alison Moyet (1984)",              "secret": "I"},
+    {"word": "EVERYWHERE", "secret_pos": 0, "clue": "Fleetwood Mac (1987)",             "secret": "E"},
+    {"word": "RELAX",      "secret_pos": 0, "clue": "Frankie Goes to Hollywood (1983)", "secret": "R"},
+    {"word": "NIKITA",     "secret_pos": 0, "clue": "Elton John (1985)",                "secret": "N"},
+    {"word": "AFRICA",     "secret_pos": 0, "clue": "Toto (1982)",                      "secret": "A"},
+    {"word": "ALONE",      "secret_pos": 0, "clue": "Heart (1987)",                     "secret": "A"},
+    {"word": "ROSANNA",    "secret_pos": 0, "clue": "Toto (1982)",                      "secret": "R"},
+    {"word": "LUKA",       "secret_pos": 0, "clue": "Suzanne Vega (1987)",              "secret": "L"},
+    {"word": "INVINCIBLE", "secret_pos": 0, "clue": "Pat Benatar (1985)",               "secret": "I"},
+    {"word": "NOTORIOUS",  "secret_pos": 0, "clue": "Duran Duran (1986)",               "secret": "N"},
+    {"word": "KYRIE",      "secret_pos": 0, "clue": "Mr. Mister (1985)",                "secret": "K"},
+    {"word": "SHOUT",      "secret_pos": 0, "clue": "Tears for Fears (1984)",           "secret": "S"},
 ]
 
 SIZE = 25
@@ -247,7 +252,7 @@ def main():
     # Sort by clue number
     result["words"].sort(key=lambda x: x["clue_num"])
 
-    with open('/home/user/crossword_data.json', 'w') as f:
+    with open(OUTPUT_JSON, 'w') as f:
         json.dump(result, f, indent=2)
 
     print("\nJSON saved to crossword_data.json")
