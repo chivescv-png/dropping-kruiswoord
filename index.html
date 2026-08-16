@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dropping Kruiswoordraadsel 🎵</title>
+<style>
+  :root {
+    --cell: 38px;
+    --accent: #f5a623;
+    --secret: #ffe066;
+    --secret-border: #e6a800;
+    --correct: #a8e6a1;
+    --wrong: #ffaaaa;
+    --selected: #b3d9ff;
+    --selected-word: #dceeff;
+    --bg: #1a1a2e;
+    --panel: #16213e;
+    --text: #eaeaea;
+    --muted: #8899aa;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 16px;
+  }
+
+  header { text-align: center; margin-bottom: 20px; }
+  header h1 {
+    font-size: 1.8rem;
+    color: var(--accent);
+    letter-spacing: 2px;
+    text-shadow: 0 0 20px rgba(245,166,35,0.4);
+  }
+  header p { color: var(--muted); font-size: 0.9rem; margin-top: 6px; }
+
+  .layout {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  /* ── GRID ── */
+  .grid-wrap { overflow-x: auto; }
+  .grid {
+    display: grid;
+    gap: 2px;
+    background: #0a0a1a;
+    border: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 4px;
+    width: fit-content;
+  }
+
+  .cell {
+    width: var(--cell);
+    height: var(--cell);
+    position: relative;
+    background: #f0ece4;
+    border-radius: 3px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .cell.black {
+    background: #1a1a2e;
+    border-radius: 2px;
+    cursor: default;
+    pointer-events: none;
+  }
+  .cell input {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: transparent;
+    text-align: center;
+    font-size: calc(var(--cell) * 0.5);
+    font-weight: bold;
+    color: #222;
+    text-transform: uppercase;
+    cursor: pointer;
+    caret-color: transparent;
+    outline: none;
+    padding-top: 6px;
+  }
+  .cell .clue-num {
+    position: absolute;
+    top: 1px; left: 2px;
+    font-size: 9px;
+    font-weight: bold;
+    color: #444;
+    line-height: 1;
+    pointer-events: none;
+    z-index: 2;
+  }
+  .cell .secret-num {
+    position: absolute;
+    top: 1px; right: 2px;
+    font-size: 8px;
+    font-weight: bold;
+    color: #995500;
+    line-height: 1;
+    pointer-events: none;
+    z-index: 2;
+  }
+  .cell.secret { background: var(--secret); box-shadow: 0 0 0 2px var(--secret-border); }
+  .cell.secret input { color: #5a3a00; }
+  .cell.selected  { background: var(--selected)      !important; box-shadow: 0 0 0 2px #2288ff !important; }
+  .cell.selected-word { background: var(--selected-word) !important; }
+  .cell.secret.selected-word { background: #fff0a0 !important; }
+  .cell.correct   { background: var(--correct) !important; }
+  .cell.wrong     { background: var(--wrong)   !important; }
+
+  /* ── CLUES PANEL ── */
+  .clues {
+    background: var(--panel);
+    border: 1px solid #2a3a5a;
+    border-radius: 10px;
+    padding: 14px;
+    min-width: 260px;
+    max-width: 310px;
+    max-height: 82vh;
+    overflow-y: auto;
+  }
+  .clues h2 {
+    font-size: 1rem;
+    color: var(--accent);
+    margin-bottom: 8px;
+    border-bottom: 1px solid #2a3a5a;
+    padding-bottom: 6px;
+  }
+
+  .clue-item {
+    border-radius: 6px;
+    margin-bottom: 2px;
+    transition: background 0.15s;
+    overflow: hidden;
+  }
+  .clue-item:hover { background: #1e3060; }
+  .clue-item.active { background: #1e4080; }
+
+  .clue-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 6px;
+    cursor: pointer;
+  }
+  .clue-row .num {
+    font-weight: bold;
+    color: var(--accent);
+    min-width: 22px;
+    font-size: 0.82rem;
+    flex-shrink: 0;
+  }
+  .clue-row .txt {
+    font-size: 0.82rem;
+    line-height: 1.4;
+    flex: 1;
+    color: var(--text);
+  }
+
+  /* Music play button */
+  .play-btn {
+    background: #1DB954;
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    font-size: 13px;
+    transition: transform 0.15s, background 0.15s;
+    color: #fff;
+  }
+  .play-btn:hover { transform: scale(1.12); background: #1ed760; }
+  .play-btn.playing { background: #e04040; }
+  .play-btn.loading { background: #888; cursor: wait; }
+
+  /* Spotify speler is onzichtbaar maar in het viewport (opacity:0 zodat de API werkt) */
+  #spotify-hidden {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    width: 300px;
+    height: 80px;
+    overflow: hidden;
+    pointer-events: none;
+    opacity: 0;
+    z-index: -1;
+  }
+
+  /* ── SECRET MESSAGE ── */
+  .secret-section {
+    width: 100%;
+    max-width: 680px;
+    margin: 24px auto 0;
+    background: var(--panel);
+    border: 2px solid var(--accent);
+    border-radius: 12px;
+    padding: 18px 20px;
+    text-align: center;
+  }
+  .secret-section h2 { color: var(--accent); font-size: 1rem; margin-bottom: 4px; }
+  .secret-section p.hint { color: var(--muted); font-size: 0.78rem; margin-bottom: 14px; }
+
+  .secret-letters {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .secret-box { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  .secret-box .snum { font-size: 9px; color: var(--muted); }
+  .secret-box .sletter {
+    width: 32px; height: 32px;
+    background: var(--secret);
+    border: 2px solid var(--secret-border);
+    border-radius: 5px;
+    font-size: 1.1rem; font-weight: bold;
+    color: #5a3a00;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s;
+  }
+  .secret-box .sletter.empty {
+    background: #2a2a4a;
+    border-color: #3a3a6a;
+    color: transparent;
+  }
+  .secret-word {
+    font-size: 1.4rem; font-weight: bold;
+    letter-spacing: 4px;
+    color: var(--accent);
+    min-height: 2rem;
+  }
+
+  .buttons {
+    display: flex; gap: 10px;
+    justify-content: center;
+    margin-top: 14px; flex-wrap: wrap;
+  }
+  button.btn {
+    padding: 9px 20px;
+    border: none; border-radius: 8px;
+    font-size: 0.9rem; font-weight: bold;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .btn-check  { background: var(--accent); color: #1a1a2e; }
+  .btn-check:hover  { background: #ffbb44; transform: translateY(-1px); }
+  .btn-reveal { background: #2a4a8a; color: #eaeaea; }
+  .btn-reveal:hover { background: #3a5aaa; }
+  .btn-reset  { background: #3a2a2a; color: #ddaaaa; }
+  .btn-reset:hover  { background: #4a3030; }
+
+  .legend {
+    display: flex; gap: 12px;
+    justify-content: center;
+    margin-top: 12px; flex-wrap: wrap;
+    font-size: 0.78rem; color: var(--muted);
+  }
+  .legend span { display: flex; align-items: center; gap: 5px; }
+  .legend .dot { width: 14px; height: 14px; border-radius: 3px; flex-shrink: 0; }
+
+  .win-msg {
+    display: none;
+    font-size: 1.4rem; font-weight: bold;
+    color: #44ff88; margin-top: 8px;
+    animation: pulse 1s infinite alternate;
+  }
+  @keyframes pulse {
+    from { opacity: 0.7; transform: scale(1); }
+    to   { opacity: 1;   transform: scale(1.04); }
+  }
+
+  @media (max-width: 600px) {
+    :root { --cell: 30px; }
+    header h1 { font-size: 1.3rem; }
+    .clues { max-width: 100%; max-height: 40vh; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🎵 Dropping Kruiswoord 🎵</h1>
+  <p>Druk op 🎵 bij elke aanwijzing om het liedje te beluisteren — de ★-vakjes geven een geheim bericht!</p>
+</header>
+
+<div class="layout">
+  <div class="grid-wrap">
+    <div class="grid" id="cwGrid"></div>
+  </div>
+  <div>
+    <div class="clues" id="cluesAcross"><h2>➡ Horizontaal</h2></div>
+    <div class="clues" style="margin-top:12px" id="cluesDown"><h2>⬇ Verticaal</h2></div>
+  </div>
+</div>
+
+<div class="secret-section">
+  <h2>⭐ Geheim Bericht</h2>
+  <p class="hint">Vul de ster-vakjes in volgorde (★1→★13) in om te ontdekken waar je naartoe moet!</p>
+  <div class="secret-letters" id="secretLetters"></div>
+  <div class="secret-word" id="secretWord"></div>
+  <div class="win-msg" id="winMsg">🎉 Goed gedaan! Ga die kant op! 🎉</div>
+  <div class="buttons">
+    <button class="btn btn-reset"  onclick="resetGrid()">↺ Opnieuw</button>
+  </div>
+  <div class="legend">
+    <span><div class="dot" style="background:var(--secret);border:1px solid var(--secret-border)"></div> Geheim vakje (★)</span>
+  </div>
+</div>
+
+<!-- Verborgen Spotify speler – audio speelt, embed is nooit zichtbaar -->
+<div id="spotify-hidden" aria-hidden="true">
+  <div id="spotify-embed-target"></div>
+</div>
+
+<script>
+// ── Spotify track IDs ─────────────────────────────────────────
+const SPOTIFY_IDS = {
+  HOLIDAY: "49ul7T6QlHsbnwYYNXE87O",   // Madonna – Holiday (1983)
+  ISLANDS: "6dnco8haegnJYtylV26cBq",   // Dolly Parton & Kenny Rogers – Islands in the Stream (1983)
+  EASY:    "5ImB84KIudntOyb89107Ob",   // Phil Collins & Philip Bailey – Easy Lover (1984)
+  RELAX:   "2ewWHECQ6LRCqd659StkHM",   // Frankie Goes to Hollywood – Relax (1983)
+  NENA:    "0awSWPFjRy1YhX8aUu7eQL",   // Nena – 99 Luftballons (1983)
+  AFRICA:  "2374M0fQpWi3dLnB54qaLX",   // Toto – Africa (1982)
+  ALONE:   "54b8qPFqYqIndfdxiLApea",   // Heart – Alone (1987)
+  RADIO:   "2jAc9KIQ9XoZxkydXh3MVh",   // Queen – Radio Ga Ga (1984)
+  LADY:    "71vNWPohKyMC0uiZtHGKP1",   // Chris de Burgh – The Lady in Red (1986)
+  IVORY:   "1h3bcnnIm72UnemGIfm0iZ",   // Paul McCartney & Stevie Wonder – Ebony and Ivory (1982)
+  NOTHING: "1KEIfWnFxGFZCvFP8fRMzX",   // Starship – Nothing's Gonna Stop Us Now (1987)
+  KARMA:   "39RzQvkKO0CKYyRWiTq4pI",   // Culture Club – Karma Chameleon (1983)
+  SHOUT:   "78pWJBORGGzubvuVOVo2Vt",   // Tears for Fears – Shout (1984)
+};
+
+// ── Spotify IFrame API – onzichtbare embed, bediening via postMessage ──
+let spotifyController = null;
+let pendingUri = null;
+let currentWord = null;
+let currentBtn  = null;
+let autoPlayPending = false;   // wacht op track-geladen event om play() te roepen
+
+window.onSpotifyIframeApiReady = (IFrameAPI) => {
+  IFrameAPI.createController(
+    document.getElementById('spotify-embed-target'),
+    { uri: 'spotify:track:49ul7T6QlHsbnwYYNXE87O', height: '80' },
+    (ctrl) => {
+      spotifyController = ctrl;
+
+      // Zodra track geladen is (isPaused=true, niet buffering) → speel af
+      ctrl.addListener('playback_update', (e) => {
+        if (autoPlayPending && e.data.isPaused && !e.data.isBuffering) {
+          autoPlayPending = false;
+          ctrl.play();
+        }
+      });
+
+      // Als gebruiker al geklikt had vóór de API klaar was
+      if (pendingUri) {
+        autoPlayPending = true;
+        ctrl.loadUri(pendingUri);
+        pendingUri = null;
+      }
+    }
+  );
+};
+
+// Laad Spotify IFrame API script
+(function() {
+  const s = document.createElement('script');
+  s.src = 'https://open.spotify.com/embed/iframe-api/v1';
+  s.async = true;
+  document.head.appendChild(s);
+})();
+
+function toggleSpotify(word, btn) {
+  const trackId = SPOTIFY_IDS[word];
+  if (!trackId) return;
+  const uri = `spotify:track:${trackId}`;
+
+  // Zelfde liedje: pauzeer
+  if (currentWord === word) {
+    autoPlayPending = false;
+    spotifyController?.pause();
+    btn.textContent = '▶';
+    btn.classList.remove('playing');
+    currentWord = null;
+    currentBtn  = null;
+    return;
+  }
+
+  // Vorig liedje stoppen
+  if (currentBtn) {
+    currentBtn.textContent = '▶';
+    currentBtn.classList.remove('playing');
+  }
+
+  // Speel nieuw liedje
+  if (spotifyController) {
+    autoPlayPending = true;       // listener roept play() zodra track geladen is
+    spotifyController.loadUri(uri);
+    spotifyController.play();     // optimistisch proberen (werkt als track al gecached is)
+  } else {
+    pendingUri = uri;             // wacht tot API klaar is
+  }
+
+  btn.textContent = '■';
+  btn.classList.add('playing');
+  currentWord = word;
+  currentBtn  = btn;
+}
+
+// ── Crossword data ───────────────────────────────────────────
+const CW = {
+  rows: 20, cols: 11,
+  words: [
+    {word:"KARMA",   row:1,  col:7,  dir:"down",   num:1,  clue:"Culture Club (1983)",                    sOrd:12, sRow:1,  sCol:7 },
+    {word:"NENA",    row:2,  col:2,  dir:"down",   num:2,  clue:"99 Luftballons (1983)",                  sOrd:5,  sRow:2,  sCol:2 },
+    {word:"LADY",    row:2,  col:6,  dir:"across", num:3,  clue:"Chris de Burgh (1986)",                  sOrd:9,  sRow:2,  sCol:6 },
+    {word:"AFRICA",  row:5,  col:2,  dir:"across", num:4,  clue:"Toto (1982)",                            sOrd:6,  sRow:5,  sCol:2 },
+    {word:"IVORY",   row:5,  col:5,  dir:"down",   num:5,  clue:"Paul McCartney & Stevie Wonder (1982)", sOrd:10, sRow:5,  sCol:5 },
+    {word:"RADIO",   row:7,  col:1,  dir:"across", num:6,  clue:"Queen (1984)",                           sOrd:8,  sRow:7,  sCol:1 },
+    {word:"ALONE",   row:7,  col:2,  dir:"down",   num:7,  clue:"Heart (1987)",                           sOrd:7,  sRow:7,  sCol:2 },
+    {word:"RELAX",   row:8,  col:5,  dir:"across", num:8,  clue:"Frankie Goes to Hollywood (1983)",       sOrd:4,  sRow:8,  sCol:5 },
+    {word:"EASY",    row:11, col:2,  dir:"across", num:9,  clue:"Phil Collins & Philip Bailey (1984)",    sOrd:3,  sRow:11, sCol:2 },
+    {word:"SHOUT",   row:11, col:4,  dir:"down",   num:10, clue:"Tears for Fears (1984)",                 sOrd:13, sRow:11, sCol:4 },
+    {word:"HOLIDAY", row:13, col:3,  dir:"across", num:11, clue:"Madonna (1983)",                         sOrd:1,  sRow:13, sCol:3 },
+    {word:"ISLANDS", row:13, col:6,  dir:"down",   num:12, clue:"Kenny Rogers & Dolly Parton (1983)",     sOrd:2,  sRow:13, sCol:6 },
+    {word:"NOTHING", row:17, col:1,  dir:"across", num:13, clue:"Starship (1987)",                        sOrd:11, sRow:17, sCol:1 }
+  ]
+};
+
+// Build answer grid from words
+const ANSWER_GRID = Array.from({length:CW.rows}, () => Array(CW.cols).fill('.'));
+CW.words.forEach(w => {
+  for (let i = 0; i < w.word.length; i++) {
+    const r = w.dir === 'down'   ? w.row + i : w.row;
+    const c = w.dir === 'across' ? w.col + i : w.col;
+    ANSWER_GRID[r][c] = w.word[i];
+  }
+});
+
+const SECRET_CELLS = {};
+CW.words.forEach(w => { SECRET_CELLS[`${w.sRow},${w.sCol}`] = w.sOrd; });
+
+const CLUE_NUM_CELLS = {};
+CW.words.forEach(w => {
+  const key = `${w.row},${w.col}`;
+  if (!CLUE_NUM_CELLS[key]) CLUE_NUM_CELLS[key] = w.num;
+});
+
+// ── State ────────────────────────────────────────────────────
+const userGrid = Array.from({length:CW.rows}, () => Array(CW.cols).fill(''));
+let selectedCell = null;
+let selectedWord = null;
+
+// ── Grid rendering ───────────────────────────────────────────
+function buildGrid() {
+  const grid = document.getElementById('cwGrid');
+  grid.style.gridTemplateColumns = `repeat(${CW.cols}, var(--cell))`;
+  grid.style.gridTemplateRows    = `repeat(${CW.rows}, var(--cell))`;
+
+  for (let r = 0; r < CW.rows; r++) {
+    for (let c = 0; c < CW.cols; c++) {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.id = `c${r}_${c}`;
+
+      if (ANSWER_GRID[r][c] === '.') {
+        cell.classList.add('black');
+      } else {
+        if (CLUE_NUM_CELLS[`${r},${c}`]) {
+          const num = document.createElement('div');
+          num.className = 'clue-num';
+          num.textContent = CLUE_NUM_CELLS[`${r},${c}`];
+          cell.appendChild(num);
+        }
+        const sOrd = SECRET_CELLS[`${r},${c}`];
+        if (sOrd !== undefined) {
+          cell.classList.add('secret');
+          const sn = document.createElement('div');
+          sn.className = 'secret-num';
+          sn.textContent = '★' + sOrd;
+          cell.appendChild(sn);
+        }
+        const inp = document.createElement('input');
+        inp.type = 'text'; inp.maxLength = 1; inp.autocomplete = 'off';
+        inp.dataset.r = r; inp.dataset.c = c;
+        inp.addEventListener('click',   () => onCellClick(r, c));
+        inp.addEventListener('keydown', (e) => onKeyDown(r, c, e));
+        inp.addEventListener('input',   (e) => onInput(r, c, e));
+        cell.appendChild(inp);
+        cell.addEventListener('click', () => cell.querySelector('input')?.focus());
+      }
+      grid.appendChild(cell);
+    }
+  }
+}
+
+// ── Word / selection helpers ─────────────────────────────────
+function wordsAtCell(r, c) {
+  return CW.words.filter(w =>
+    w.dir === 'across'
+      ? w.row === r && c >= w.col && c < w.col + w.word.length
+      : w.col === c && r >= w.row && r < w.row + w.word.length
+  );
+}
+
+function clearHighlights() {
+  document.querySelectorAll('.cell.selected,.cell.selected-word').forEach(el =>
+    el.classList.remove('selected','selected-word'));
+  document.querySelectorAll('.clue-item.active').forEach(el => el.classList.remove('active'));
+}
+
+function selectWord(word) {
+  selectedWord = word;
+  clearHighlights();
+  for (let i = 0; i < word.word.length; i++) {
+    const r = word.dir === 'down'   ? word.row + i : word.row;
+    const c = word.dir === 'across' ? word.col + i : word.col;
+    document.getElementById(`c${r}_${c}`)?.classList.add('selected-word');
+  }
+  if (selectedCell) {
+    const el = document.getElementById(`c${selectedCell.r}_${selectedCell.c}`);
+    if (el) { el.classList.remove('selected-word'); el.classList.add('selected'); }
+  }
+  const clueEl = document.getElementById(`clue_${word.num}_${word.dir}`);
+  if (clueEl) { clueEl.classList.add('active'); clueEl.scrollIntoView({block:'nearest',behavior:'smooth'}); }
+}
+
+function onCellClick(r, c) {
+  const words = wordsAtCell(r, c);
+  if (!words.length) return;
+  if (selectedCell?.r === r && selectedCell?.c === c && selectedWord) {
+    const other = words.find(w => w !== selectedWord);
+    if (other) { selectWord(other); return; }
+  }
+  selectedCell = {r, c};
+  let w = selectedWord ? words.find(wd => wd.dir === selectedWord.dir) : null;
+  if (!w) w = words[0];
+  selectWord(w);
+}
+
+function onKeyDown(r, c, e) {
+  // Lettertoets: selecteer bestaande inhoud zodat die overschreven wordt
+  if (e.key.length === 1 && /[A-Za-z]/.test(e.key)) {
+    document.getElementById(`c${r}_${c}`)?.querySelector('input')?.select();
+  }
+  if (!selectedWord) return;
+  const dr = selectedWord.dir === 'across' ? 0 : 1;
+  const dc = selectedWord.dir === 'across' ? 1 : 0;
+
+  if (e.key === 'Backspace') {
+    e.preventDefault();
+    const inp = document.getElementById(`c${r}_${c}`)?.querySelector('input');
+    if (inp?.value) { inp.value = ''; userGrid[r][c] = ''; updateSecretDisplay(); }
+    else {
+      const nr = r - dr, nc = c - dc;
+      if (nr >= 0 && nc >= 0 && ANSWER_GRID[nr][nc] !== '.') {
+        moveTo(nr, nc);
+        const ni = document.getElementById(`c${nr}_${nc}`)?.querySelector('input');
+        if (ni) { ni.value = ''; userGrid[nr][nc] = ''; }
+        updateSecretDisplay();
+      }
+    }
+    return;
+  }
+  if (e.key === 'ArrowRight') { e.preventDefault(); moveTo(r, c+1); return; }
+  if (e.key === 'ArrowLeft')  { e.preventDefault(); moveTo(r, c-1); return; }
+  if (e.key === 'ArrowDown')  { e.preventDefault(); moveTo(r+1, c); return; }
+  if (e.key === 'ArrowUp')    { e.preventDefault(); moveTo(r-1, c); return; }
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    const idx = CW.words.indexOf(selectedWord);
+    const next = CW.words[(idx + (e.shiftKey ? CW.words.length-1 : 1)) % CW.words.length];
+    selectedCell = {r: next.row, c: next.col};
+    selectWord(next);
+    document.getElementById(`c${next.row}_${next.col}`)?.querySelector('input')?.focus();
+  }
+}
+
+function onInput(r, c, e) {
+  const inp = e.target;
+  const val = inp.value.toUpperCase().replace(/[^A-Z]/g, '');
+  inp.value = val ? val[0] : '';
+  userGrid[r][c] = inp.value;
+  updateSecretDisplay();
+  if (inp.value && selectedWord) {
+    const nr = selectedWord.dir === 'across' ? r : r + 1;
+    const nc = selectedWord.dir === 'across' ? c + 1 : c;
+    if (nr < CW.rows && nc < CW.cols && ANSWER_GRID[nr][nc] !== '.') moveTo(nr, nc);
+  }
+}
+
+function moveTo(r, c) {
+  if (r < 0 || r >= CW.rows || c < 0 || c >= CW.cols) return;
+  if (ANSWER_GRID[r][c] === '.') return;
+  selectedCell = {r, c};
+  const words = wordsAtCell(r, c);
+  if (!words.length) return;
+  let w = words.find(wd => wd.dir === (selectedWord?.dir ?? 'across')) || words[0];
+  selectWord(w);
+  document.getElementById(`c${r}_${c}`)?.querySelector('input')?.focus();
+}
+
+// ── Secret message ───────────────────────────────────────────
+const SECRET_ANSWER = 'HIERNAARLINKS';
+const SECRET_ORDER = [];
+for (let o = 1; o <= 13; o++) {
+  const entry = CW.words.find(w => w.sOrd === o);
+  if (entry) SECRET_ORDER.push({order:o, r:entry.sRow, c:entry.sCol});
+}
+
+function buildSecretDisplay() {
+  const container = document.getElementById('secretLetters');
+  SECRET_ORDER.forEach(s => {
+    const box = document.createElement('div'); box.className = 'secret-box';
+    const num = document.createElement('div'); num.className = 'snum'; num.textContent = s.order;
+    const ltr = document.createElement('div'); ltr.className = 'sletter empty'; ltr.id = `sl_${s.order}`; ltr.textContent = '?';
+    box.append(num, ltr); container.appendChild(box);
+  });
+}
+
+function updateSecretDisplay() {
+  let msg = '', allFilled = true;
+  SECRET_ORDER.forEach(s => {
+    const typed = userGrid[s.r][s.c] || '';
+    const el = document.getElementById(`sl_${s.order}`);
+    if (typed) { el.textContent = typed; el.classList.remove('empty'); msg += typed; }
+    else       { el.textContent = '?'; el.classList.add('empty'); msg += '_'; allFilled = false; }
+  });
+  const wordEl = document.getElementById('secretWord');
+  const correct = msg === SECRET_ANSWER;
+  wordEl.textContent = allFilled ? msg.split('').join(' ') : msg.replace(/_/g,' _ ').trim();
+  wordEl.style.color = (allFilled && correct) ? '#44ff88' : 'var(--accent)';
+  document.getElementById('winMsg').style.display = (allFilled && correct) ? 'block' : 'none';
+}
+
+// ── Check / Reveal / Reset ───────────────────────────────────
+function checkAnswers() {
+  for (let r = 0; r < CW.rows; r++) {
+    for (let c = 0; c < CW.cols; c++) {
+      if (ANSWER_GRID[r][c] === '.') continue;
+      const cell = document.getElementById(`c${r}_${c}`);
+      const typed = userGrid[r][c];
+      cell.classList.remove('correct','wrong');
+      if (typed) cell.classList.add(typed === ANSWER_GRID[r][c] ? 'correct' : 'wrong');
+    }
+  }
+}
+
+function revealAll() {
+  for (let r = 0; r < CW.rows; r++) {
+    for (let c = 0; c < CW.cols; c++) {
+      if (ANSWER_GRID[r][c] === '.') continue;
+      const inp = document.getElementById(`c${r}_${c}`)?.querySelector('input');
+      if (inp) { inp.value = ANSWER_GRID[r][c]; userGrid[r][c] = ANSWER_GRID[r][c]; }
+      const cell = document.getElementById(`c${r}_${c}`);
+      cell.classList.remove('wrong'); cell.classList.add('correct');
+    }
+  }
+  updateSecretDisplay();
+}
+
+function resetGrid() {
+  for (let r = 0; r < CW.rows; r++) {
+    for (let c = 0; c < CW.cols; c++) {
+      if (ANSWER_GRID[r][c] === '.') continue;
+      const inp = document.getElementById(`c${r}_${c}`)?.querySelector('input');
+      if (inp) inp.value = '';
+      userGrid[r][c] = '';
+      document.getElementById(`c${r}_${c}`)?.classList.remove('correct','wrong');
+    }
+  }
+  updateSecretDisplay();
+}
+
+// ── Build clue panels ─────────────────────────────────────────
+function buildClues() {
+  const across = CW.words.filter(w => w.dir === 'across').sort((a,b) => a.num - b.num);
+  const down   = CW.words.filter(w => w.dir === 'down'  ).sort((a,b) => a.num - b.num);
+
+  function addClues(words, containerId) {
+    const container = document.getElementById(containerId);
+    words.forEach(w => {
+      const item = document.createElement('div');
+      item.className = 'clue-item';
+      item.id = `clue_${w.num}_${w.dir}`;
+
+      // Main row: number + text + play button
+      const row = document.createElement('div');
+      row.className = 'clue-row';
+
+      const numEl = document.createElement('div'); numEl.className = 'num'; numEl.textContent = w.num + '.';
+      const txt   = document.createElement('div'); txt.className = 'txt';  txt.textContent = w.clue;
+
+      const btn = document.createElement('button');
+      btn.className = 'play-btn';
+      btn.textContent = '▶';
+      btn.title = 'Speel liedje af';
+
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleSpotify(w.word, btn);
+      });
+
+      // Clicking the row selects the word in the grid
+      row.addEventListener('click', () => {
+        selectedCell = {r: w.row, c: w.col};
+        selectWord(w);
+        document.getElementById(`c${w.row}_${w.col}`)?.querySelector('input')?.focus();
+      });
+
+      row.append(numEl, txt, btn);
+      item.append(row);
+      container.appendChild(item);
+    });
+  }
+
+  addClues(across, 'cluesAcross');
+  addClues(down,   'cluesDown');
+}
+
+// ── Init ──────────────────────────────────────────────────────
+buildGrid();
+buildClues();
+buildSecretDisplay();
+updateSecretDisplay();
+
+setTimeout(() => {
+  const first = CW.words.find(w => w.num === 2);
+  if (first) {
+    selectedCell = {r: first.row, c: first.col};
+    selectWord(first);
+    document.getElementById(`c${first.row}_${first.col}`)?.querySelector('input')?.focus();
+  }
+}, 100);
+</script>
+</body>
+</html>
