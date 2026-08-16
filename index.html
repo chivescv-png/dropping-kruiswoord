@@ -702,7 +702,8 @@ function buildClues() {
       row.className = 'clue-row';
 
       const numEl = document.createElement('div'); numEl.className = 'num'; numEl.textContent = w.num + '.';
-      const txt   = document.createElement('div'); txt.className = 'txt';  txt.textContent = w.clue;
+      const txt   = document.createElement('div'); txt.className = 'txt';
+      txt.textContent = w.clue.match(/\d{4}/)?.[0] ?? '';
 
       const btn = document.createElement('button');
       btn.className = 'play-btn';
