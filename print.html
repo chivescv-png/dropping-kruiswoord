@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vanremo Kruiswoordraadsel – papieren versie</title>
+<title>Varemo Kruiswoordraadsel – papieren versie</title>
 <style>
   :root { --cell: 6.7mm; }
   * { box-sizing: border-box; }
@@ -48,7 +48,7 @@
       <img src="dropping-kruiswoord-qr.png" alt="QR-code naar de online kruiswoordpuzzel">
       Scan voor opdracht
     </a>
-    <h1>Vanremo Kruiswoordraadsel</h1>
+    <h1>Varemo Kruiswoordraadsel</h1>
     <p class="subtitle">Scan de QR-code om de liedjes te beluisteren. De stervakjes vormen samen een geheim bericht.</p>
   </header>
   <div class="grid" id="grid"></div>
@@ -81,10 +81,12 @@ const CW = {
     {word:"IWANTTOBREAKFREE",row:18,col:3,dir:"across",num:13,year:"1984"}
   ],
   secrets: [
-    {order:1,row:6,col:13},{order:2,row:15,col:15},{order:3,row:6,col:8},
-    {order:4,row:6,col:4},{order:5,row:18,col:7},{order:6,row:8,col:1},
-    {order:7,row:6,col:7},{order:8,row:11,col:10},{order:9,row:9,col:12},
-    {order:10,row:5,col:5},{order:11,row:18,col:14}
+    {order:1,row:6,col:13},{order:2,row:5,col:17},{order:3,row:11,col:8},
+    {order:4,row:6,col:4},{order:5,row:6,col:18},{order:6,row:6,col:7},
+    {order:7,row:7,col:15},{order:8,row:10,col:12},{order:9,row:8,col:3},
+    {order:10,row:3,col:15},{order:11,row:15,col:15},{order:12,row:4,col:3},
+    {order:13,row:18,col:7},{order:14,row:3,col:17},{order:15,row:9,col:14},
+    {order:16,row:5,col:5},{order:17,row:11,col:10}
   ]
 };
 const answers = Array.from({length:CW.rows},()=>Array(CW.cols).fill(false));
@@ -122,7 +124,7 @@ function addClues(direction,id) {
   });
 }
 addClues('across','across'); addClues('down','down');
-for(let i=1;i<=11;i++) {
+for(let i=1;i<=17;i++) {
   const box=document.createElement('div'); box.className='secret-box'; box.innerHTML=`<span>${i}</span>`;
   document.getElementById('secretBoxes').appendChild(box);
 }

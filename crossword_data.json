@@ -639,19 +639,19 @@
       "col": 13
     },
     {
-      "word": "SHOUT",
+      "word": "NIKITA",
       "position": 4,
       "letter": "T",
       "order": 2,
-      "row": 15,
-      "col": 15
+      "row": 5,
+      "col": 17
     },
     {
       "word": "AFRICA",
-      "position": 0,
+      "position": 5,
       "letter": "A",
       "order": 3,
-      "row": 6,
+      "row": 11,
       "col": 8
     },
     {
@@ -663,60 +663,108 @@
       "col": 4
     },
     {
-      "word": "IWANTTOBREAKFREE",
-      "position": 4,
-      "letter": "T",
+      "word": "SUCHASHAME",
+      "position": 5,
+      "letter": "S",
       "order": 5,
-      "row": 18,
-      "col": 7
-    },
-    {
-      "word": "HOLIDAY",
-      "position": 1,
-      "letter": "O",
-      "order": 6,
-      "row": 8,
-      "col": 1
+      "row": 6,
+      "col": 18
     },
     {
       "word": "RESPECTABLE",
       "position": 6,
       "letter": "T",
-      "order": 7,
+      "order": 6,
       "row": 6,
       "col": 7
     },
     {
-      "word": "LUKA",
-      "position": 2,
-      "letter": "K",
-      "order": 8,
-      "row": 11,
-      "col": 10
+      "word": "GRACELAND",
+      "position": 4,
+      "letter": "E",
+      "order": 7,
+      "row": 7,
+      "col": 15
     },
     {
       "word": "EVERYWHERE",
-      "position": 0,
-      "letter": "E",
-      "order": 9,
-      "row": 9,
+      "position": 1,
+      "letter": "V",
+      "order": 8,
+      "row": 10,
       "col": 12
+    },
+    {
+      "word": "HOLIDAY",
+      "position": 3,
+      "letter": "I",
+      "order": 9,
+      "row": 8,
+      "col": 3
+    },
+    {
+      "word": "GRACELAND",
+      "position": 0,
+      "letter": "G",
+      "order": 10,
+      "row": 3,
+      "col": 15
+    },
+    {
+      "word": "SHOUT",
+      "position": 4,
+      "letter": "T",
+      "order": 11,
+      "row": 15,
+      "col": 15
+    },
+    {
+      "word": "BOYS",
+      "position": 1,
+      "letter": "O",
+      "order": 12,
+      "row": 4,
+      "col": 3
+    },
+    {
+      "word": "IWANTTOBREAKFREE",
+      "position": 4,
+      "letter": "T",
+      "order": 13,
+      "row": 18,
+      "col": 7
+    },
+    {
+      "word": "NIKITA",
+      "position": 2,
+      "letter": "K",
+      "order": 14,
+      "row": 3,
+      "col": 17
+    },
+    {
+      "word": "BILLIEJEAN",
+      "position": 7,
+      "letter": "E",
+      "order": 15,
+      "row": 9,
+      "col": 14
     },
     {
       "word": "RELAX",
       "position": 0,
       "letter": "R",
-      "order": 10,
+      "order": 16,
       "row": 5,
       "col": 5
     },
     {
-      "word": "IWANTTOBREAKFREE",
-      "position": 11,
+      "word": "LUKA",
+      "position": 2,
       "letter": "K",
-      "order": 11,
-      "row": 18,
-      "col": 14
+      "order": 17,
+      "row": 11,
+      "col": 10
     }
   ]
 }

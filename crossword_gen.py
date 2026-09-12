@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Crossword generator for the "STAP TOT KERK" dropping puzzle.
+Crossword generator for the "STAP STEVIG TOT KERK" dropping puzzle.
 Selected letter cells contribute to the secret message.
 """
 
@@ -12,7 +12,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 OUTPUT_JSON = os.path.join(SCRIPT_DIR, 'crossword_data.json')
 
 # Words and their metadata
-# Secret message: S-T-A-P-T-O-T-K-E-R-K
+# Secret message: S-T-A-P-S-T-E-V-I-G-T-O-T-K-E-R-K
 WORDS_DATA = [
     {"word": "HOLIDAY",    "clue": "Madonna (1983)"},
     {"word": "BOYS",       "clue": "Sabrina (1987)"},
@@ -31,16 +31,22 @@ WORDS_DATA = [
 
 SECRET_DATA = [
     {"word": "SUCHASHAME", "pos": 0,  "order": 1,  "letter": "S"},
-    {"word": "SHOUT",      "pos": 4,  "order": 2,  "letter": "T"},
-    {"word": "AFRICA",     "pos": 0,  "order": 3,  "letter": "A"},
+    {"word": "NIKITA",     "pos": 4,  "order": 2,  "letter": "T"},
+    {"word": "AFRICA",     "pos": 5,  "order": 3,  "letter": "A"},
     {"word": "RESPECTABLE", "pos": 3, "order": 4,  "letter": "P"},
-    {"word": "IWANTTOBREAKFREE", "pos": 4, "order": 5, "letter": "T"},
-    {"word": "HOLIDAY",    "pos": 1,  "order": 6,  "letter": "O"},
-    {"word": "RESPECTABLE", "pos": 6, "order": 7,  "letter": "T"},
-    {"word": "LUKA",       "pos": 2,  "order": 8,  "letter": "K"},
-    {"word": "EVERYWHERE", "pos": 0,  "order": 9,  "letter": "E"},
-    {"word": "RELAX",      "pos": 0,  "order": 10, "letter": "R"},
-    {"word": "IWANTTOBREAKFREE", "pos": 11, "order": 11, "letter": "K"},
+    {"word": "SUCHASHAME", "pos": 5,  "order": 5,  "letter": "S"},
+    {"word": "RESPECTABLE", "pos": 6, "order": 6,  "letter": "T"},
+    {"word": "GRACELAND",  "pos": 4,  "order": 7,  "letter": "E"},
+    {"word": "EVERYWHERE", "pos": 1,  "order": 8,  "letter": "V"},
+    {"word": "HOLIDAY",    "pos": 3,  "order": 9,  "letter": "I"},
+    {"word": "GRACELAND",  "pos": 0,  "order": 10, "letter": "G"},
+    {"word": "SHOUT",      "pos": 4,  "order": 11, "letter": "T"},
+    {"word": "BOYS",       "pos": 1,  "order": 12, "letter": "O"},
+    {"word": "IWANTTOBREAKFREE", "pos": 4, "order": 13, "letter": "T"},
+    {"word": "NIKITA",     "pos": 2,  "order": 14, "letter": "K"},
+    {"word": "BILLIEJEAN", "pos": 7,  "order": 15, "letter": "E"},
+    {"word": "RELAX",      "pos": 0,  "order": 16, "letter": "R"},
+    {"word": "LUKA",       "pos": 2,  "order": 17, "letter": "K"},
 ]
 
 SIZE = 25

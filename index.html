@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vanremo Kruiswoordraadsel</title>
+<title>Varemo Kruiswoordraadsel</title>
 <style>
   :root {
     --cell: 38px;
@@ -325,7 +325,7 @@
 <body>
 
 <header>
-  <h1>🎵 Vanremo Kruiswoordraadsel 🎵</h1>
+  <h1>🎵 Varemo Kruiswoordraadsel 🎵</h1>
   <p>Druk op 🎵 bij elke aanwijzing om het liedje te beluisteren — de ★-vakjes geven een geheim bericht!</p>
 </header>
 
@@ -341,7 +341,7 @@
 
 <div class="secret-section">
   <h2>⭐ Geheim Bericht</h2>
-  <p class="hint">Vul de ster-vakjes in volgorde (★1→★11) in om te ontdekken waar je naartoe moet!</p>
+  <p class="hint">Vul de ster-vakjes in volgorde (★1→★17) in om te ontdekken waar je naartoe moet!</p>
   <div class="secret-letters" id="secretLetters"></div>
   <div class="secret-word" id="secretWord"></div>
   <div class="win-msg" id="winMsg">🎉 Goed gedaan! Ga die kant op! 🎉</div>
@@ -472,10 +472,12 @@ const CW = {
     {word:"IWANTTOBREAKFREE",row:18,col:3,dir:"across",num:13,clue:"Queen (1984)"}
   ],
   secrets: [
-    {order:1,row:6,col:13},{order:2,row:15,col:15},{order:3,row:6,col:8},
-    {order:4,row:6,col:4},{order:5,row:18,col:7},{order:6,row:8,col:1},
-    {order:7,row:6,col:7},{order:8,row:11,col:10},{order:9,row:9,col:12},
-    {order:10,row:5,col:5},{order:11,row:18,col:14}
+    {order:1,row:6,col:13},{order:2,row:5,col:17},{order:3,row:11,col:8},
+    {order:4,row:6,col:4},{order:5,row:6,col:18},{order:6,row:6,col:7},
+    {order:7,row:7,col:15},{order:8,row:10,col:12},{order:9,row:8,col:3},
+    {order:10,row:3,col:15},{order:11,row:15,col:15},{order:12,row:4,col:3},
+    {order:13,row:18,col:7},{order:14,row:3,col:17},{order:15,row:9,col:14},
+    {order:16,row:5,col:5},{order:17,row:11,col:10}
   ]
 };
 
@@ -653,9 +655,9 @@ function moveTo(r, c) {
 }
 
 // ── Secret message ───────────────────────────────────────────
-const SECRET_ANSWER = 'STAPTOTKERK';
+const SECRET_ANSWER = 'STAPSTEVIGTOTKERK';
 const SECRET_ORDER = [];
-for (let o = 1; o <= 11; o++) {
+for (let o = 1; o <= 17; o++) {
   const entry = CW.secrets.find(s => s.order === o);
   if (entry) SECRET_ORDER.push({order:o, r:entry.row, c:entry.col});
 }
