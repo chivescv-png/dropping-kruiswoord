@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vanremo Kruiswoordraadsel – papieren versie</title>
+<style>
+  :root { --cell: 6.7mm; }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 12mm; font-family: Arial, sans-serif; color: #111; background: #eee; }
+  .sheet { width: 190mm; min-height: 277mm; margin: 0 auto; padding: 8mm; background: #fff; }
+  header { position: relative; text-align: center; margin-bottom: 5mm; }
+  h1 { margin: 0 0 2mm; font-size: 20pt; }
+  .subtitle { margin: 0; padding: 0 28mm; font-size: 9pt; }
+  .qr-link { position: absolute; left: 0; top: -2mm; color: #111; text-decoration: none; font-size: 6.5pt; }
+  .qr-link img { display: block; width: 20mm; height: 20mm; margin: 0 auto 0.8mm; image-rendering: pixelated; }
+  .grid { display: grid; gap: 0; width: fit-content; margin: 0 auto 5mm; }
+  .cell { width: var(--cell); height: var(--cell); position: relative; border: 0.2mm solid #555; }
+  .cell.black { background: transparent; border-color: transparent; }
+  .clue-num { position: absolute; top: 0.3mm; left: 0.5mm; font-size: 5pt; line-height: 1; }
+  .secret-num { position: absolute; right: 0.35mm; bottom: 0.25mm; font-size: 4.5pt; line-height: 1; font-weight: bold; }
+  .cell.secret { background: #f2f2f2; border: 0.6mm solid #000; }
+  .clues { display: grid; grid-template-columns: 1fr 1fr; gap: 8mm; margin-top: 3mm; }
+  h2 { margin: 0 0 2mm; padding-bottom: 1mm; border-bottom: 0.3mm solid #000; font-size: 11pt; }
+  ol { margin: 0; padding-left: 7mm; columns: 2; column-gap: 7mm; }
+  li { min-height: 6mm; padding: 0 0 1.5mm 1mm; font-size: 8.5pt; break-inside: avoid; }
+  .answer-line { display: inline-block; width: 24mm; margin-left: 2mm; border-bottom: 0.25mm solid #555; }
+  .secret-section { margin-top: 5mm; padding-top: 3mm; border-top: 0.4mm solid #000; text-align: center; }
+  .secret-section h2 { border: 0; margin-bottom: 2mm; }
+  .secret-boxes { display: flex; justify-content: center; gap: 1.4mm; }
+  .secret-box { width: 8mm; height: 8mm; border: 0.5mm solid #000; position: relative; }
+  .secret-box span { position: absolute; top: 0.3mm; left: 0.5mm; font-size: 5pt; }
+  .footer { margin-top: 4mm; text-align: center; font-size: 7pt; color: #555; }
+  @page { size: A4 portrait; margin: 7mm; }
+  @media print {
+    body { padding: 0; background: #fff; }
+    .sheet { width: auto; min-height: auto; padding: 0; }
+  }
+  @media screen and (max-width: 800px) {
+    body { padding: 8px; overflow-x: auto; }
+  }
+</style>
+</head>
+<body>
+<main class="sheet">
+  <header>
+    <a class="qr-link" href="https://dropping-kruiswoord.onrender.com">
+      <img src="dropping-kruiswoord-qr.png" alt="QR-code naar de online kruiswoordpuzzel">
+      Scan voor opdracht
+    </a>
+    <h1>Vanremo Kruiswoordraadsel</h1>
+    <p class="subtitle">Scan de QR-code om de liedjes te beluisteren. De stervakjes vormen samen een geheim bericht.</p>
+  </header>
+  <div class="grid" id="grid"></div>
+  <section class="clues">
+    <div><h2>Horizontaal</h2><ol id="across"></ol></div>
+    <div><h2>Verticaal</h2><ol id="down"></ol></div>
+  </section>
+  <section class="secret-section">
+    <h2>Geheim bericht</h2>
+    <div class="secret-boxes" id="secretBoxes"></div>
+  </section>
+  <p class="footer">★ Schrijf de letters uit de genummerde stervakjes in volgorde over.</p>
+</main>
+<script>
+const CW = {
+  rows: 20, cols: 24,
+  words: [
+    {word:"NIKITA",row:1,col:17,dir:"down",num:1,year:"1985"},
+    {word:"BOYS",row:3,col:3,dir:"down",num:2,year:"1987"},
+    {word:"GRACELAND",row:3,col:15,dir:"down",num:3,year:"1986"},
+    {word:"RELAX",row:5,col:5,dir:"down",num:4,year:"1983"},
+    {word:"RESPECTABLE",row:6,col:1,dir:"across",num:5,year:"1987"},
+    {word:"AFRICA",row:6,col:8,dir:"down",num:6,year:"1982"},
+    {word:"SUCHASHAME",row:6,col:13,dir:"across",num:7,year:"1984"},
+    {word:"HOLIDAY",row:8,col:0,dir:"across",num:8,year:"1983"},
+    {word:"BILLIEJEAN",row:9,col:7,dir:"across",num:9,year:"1982"},
+    {word:"LUKA",row:9,col:10,dir:"down",num:10,year:"1987"},
+    {word:"EVERYWHERE",row:9,col:12,dir:"down",num:11,year:"1987"},
+    {word:"SHOUT",row:15,col:11,dir:"across",num:12,year:"1984"},
+    {word:"IWANTTOBREAKFREE",row:18,col:3,dir:"across",num:13,year:"1984"}
+  ],
+  secrets: [
+    {order:1,row:6,col:13},{order:2,row:15,col:15},{order:3,row:6,col:8},
+    {order:4,row:6,col:4},{order:5,row:18,col:7},{order:6,row:8,col:1},
+    {order:7,row:6,col:7},{order:8,row:11,col:10},{order:9,row:9,col:12},
+    {order:10,row:5,col:5},{order:11,row:18,col:14}
+  ]
+};
+const answers = Array.from({length:CW.rows},()=>Array(CW.cols).fill(false));
+const starts = {};
+const secrets = {};
+CW.words.forEach(w => {
+  starts[`${w.row},${w.col}`] = w.num;
+  for (let i=0;i<w.word.length;i++) {
+    const r = w.row + (w.dir === 'down' ? i : 0);
+    const c = w.col + (w.dir === 'across' ? i : 0);
+    answers[r][c] = true;
+  }
+});
+CW.secrets.forEach(s => { secrets[`${s.row},${s.col}`] = s.order; });
+const grid = document.getElementById('grid');
+grid.style.gridTemplateColumns = `repeat(${CW.cols}, var(--cell))`;
+for (let r=0;r<CW.rows;r++) for (let c=0;c<CW.cols;c++) {
+  const cell = document.createElement('div');
+  cell.className = answers[r][c] ? 'cell' : 'cell black';
+  const key = `${r},${c}`;
+  if (answers[r][c] && starts[key]) {
+    const n = document.createElement('span'); n.className='clue-num'; n.textContent=starts[key]; cell.appendChild(n);
+  }
+  if (answers[r][c] && secrets[key]) {
+    cell.classList.add('secret');
+    const n = document.createElement('span'); n.className='secret-num'; n.textContent=`★${secrets[key]}`; cell.appendChild(n);
+  }
+  grid.appendChild(cell);
+}
+function addClues(direction,id) {
+  CW.words.filter(w=>w.dir===direction).sort((a,b)=>a.num-b.num).forEach(w=>{
+    const li=document.createElement('li'); li.value=w.num;
+    li.innerHTML=`${w.year}<span class="answer-line"></span>`;
+    document.getElementById(id).appendChild(li);
+  });
+}
+addClues('across','across'); addClues('down','down');
+for(let i=1;i<=11;i++) {
+  const box=document.createElement('div'); box.className='secret-box'; box.innerHTML=`<span>${i}</span>`;
+  document.getElementById('secretBoxes').appendChild(box);
+}
+</script>
+</body>
+</html>

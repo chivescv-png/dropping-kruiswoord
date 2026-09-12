@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Crossword generator for "HIER NAAR LINKS" dropping puzzle.
-Each word's first letter contributes to the secret message.
+Crossword generator for the "STAP TOT KERK" dropping puzzle.
+Selected letter cells contribute to the secret message.
 """
 
 import random
@@ -12,21 +12,35 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 OUTPUT_JSON = os.path.join(SCRIPT_DIR, 'crossword_data.json')
 
 # Words and their metadata
-# Secret message: H-I-E-R-N-A-A-R-L-I-N-K-S
+# Secret message: S-T-A-P-T-O-T-K-E-R-K
 WORDS_DATA = [
-    {"word": "HOLIDAY",    "secret_pos": 0, "clue": "Madonna (1983)",                   "secret": "H"},
-    {"word": "INTOTHEGROOVE", "secret_pos": 0, "clue": "Madonna (1985)",               "secret": "I"},
-    {"word": "EVERYWHERE", "secret_pos": 0, "clue": "Fleetwood Mac (1987)",             "secret": "E"},
-    {"word": "RELAX",      "secret_pos": 0, "clue": "Frankie Goes to Hollywood (1983)", "secret": "R"},
-    {"word": "NIKITA",     "secret_pos": 0, "clue": "Elton John (1985)",                "secret": "N"},
-    {"word": "AFRICA",     "secret_pos": 0, "clue": "Toto (1982)",                      "secret": "A"},
-    {"word": "ALONE",      "secret_pos": 0, "clue": "Heart (1987)",                     "secret": "A"},
-    {"word": "RESPECTABLE", "secret_pos": 0, "clue": "Mel & Kim (1987)",               "secret": "R"},
-    {"word": "LUKA",       "secret_pos": 0, "clue": "Suzanne Vega (1987)",              "secret": "L"},
-    {"word": "IWANTTOBREAKFREE", "secret_pos": 0, "clue": "Queen (1984)",              "secret": "I"},
-    {"word": "NOTORIOUS",  "secret_pos": 0, "clue": "Duran Duran (1986)",               "secret": "N"},
-    {"word": "KYRIE",      "secret_pos": 0, "clue": "Mr. Mister (1985)",                "secret": "K"},
-    {"word": "SHOUT",      "secret_pos": 0, "clue": "Tears for Fears (1984)",           "secret": "S"},
+    {"word": "HOLIDAY",    "clue": "Madonna (1983)"},
+    {"word": "BOYS",       "clue": "Sabrina (1987)"},
+    {"word": "EVERYWHERE", "clue": "Fleetwood Mac (1987)"},
+    {"word": "RELAX",      "clue": "Frankie Goes to Hollywood (1983)"},
+    {"word": "NIKITA",     "clue": "Elton John (1985)"},
+    {"word": "GRACELAND",  "clue": "Paul Simon (1986)"},
+    {"word": "AFRICA",     "clue": "Toto (1982)"},
+    {"word": "BILLIEJEAN", "clue": "Michael Jackson (1982)"},
+    {"word": "RESPECTABLE", "clue": "Mel & Kim (1987)"},
+    {"word": "LUKA",       "clue": "Suzanne Vega (1987)"},
+    {"word": "IWANTTOBREAKFREE", "clue": "Queen (1984)"},
+    {"word": "SUCHASHAME", "clue": "Talk Talk (1984)"},
+    {"word": "SHOUT",      "clue": "Tears for Fears (1984)"},
+]
+
+SECRET_DATA = [
+    {"word": "SUCHASHAME", "pos": 0,  "order": 1,  "letter": "S"},
+    {"word": "SHOUT",      "pos": 4,  "order": 2,  "letter": "T"},
+    {"word": "AFRICA",     "pos": 0,  "order": 3,  "letter": "A"},
+    {"word": "RESPECTABLE", "pos": 3, "order": 4,  "letter": "P"},
+    {"word": "IWANTTOBREAKFREE", "pos": 4, "order": 5, "letter": "T"},
+    {"word": "HOLIDAY",    "pos": 1,  "order": 6,  "letter": "O"},
+    {"word": "RESPECTABLE", "pos": 6, "order": 7,  "letter": "T"},
+    {"word": "LUKA",       "pos": 2,  "order": 8,  "letter": "K"},
+    {"word": "EVERYWHERE", "pos": 0,  "order": 9,  "letter": "E"},
+    {"word": "RELAX",      "pos": 0,  "order": 10, "letter": "R"},
+    {"word": "IWANTTOBREAKFREE", "pos": 11, "order": 11, "letter": "K"},
 ]
 
 SIZE = 25
@@ -191,7 +205,7 @@ def main():
         if word in placed_map:
             r, c, d = placed_map[word]
             direction = "Across" if d == 'A' else "Down"
-            print(f"  {word:12s} ({direction}) at ({r},{c}), secret='{wd['secret']}'")
+            print(f"  {word:16s} ({direction}) at ({r},{c})")
         else:
             print(f"  {word:12s} *** NOT PLACED ***")
 
@@ -202,7 +216,8 @@ def main():
         "grid": grid,
         "rows": rows,
         "cols": cols,
-        "words": []
+        "words": [],
+        "secrets": []
     }
 
     # Assign clue numbers
@@ -225,29 +240,33 @@ def main():
                 cell_numbers[(r, c)] = clue_num
                 clue_num += 1
 
-    secret_order = 1
     for wd in WORDS_DATA:
         word = wd['word']
         if word in placed_map:
             r, c, d = placed_map[word]
             num = cell_numbers.get((r, c), 0)
-            secret_cell_r = r + (wd['secret_pos'] if d == 'D' else 0)
-            secret_cell_c = c + (wd['secret_pos'] if d == 'A' else 0)
-
-            result["words"].append({
+            entry = {
                 "word": word,
                 "row": r,
                 "col": c,
                 "direction": "across" if d == 'A' else "down",
                 "clue_num": num,
                 "clue": wd['clue'],
-                "secret_pos": wd['secret_pos'],
-                "secret_letter": wd['secret'],
-                "secret_order": secret_order,
-                "secret_row": secret_cell_r,
-                "secret_col": secret_cell_c,
-            })
-            secret_order += 1
+            }
+            result["words"].append(entry)
+
+    for secret in SECRET_DATA:
+        word = secret['word']
+        r, c, d = placed_map[word]
+        pos = secret['pos']
+        result["secrets"].append({
+            "word": word,
+            "position": pos,
+            "letter": secret['letter'],
+            "order": secret['order'],
+            "row": r + (pos if d == 'D' else 0),
+            "col": c + (pos if d == 'A' else 0),
+        })
 
     # Sort by clue number
     result["words"].sort(key=lambda x: x["clue_num"])
@@ -257,10 +276,8 @@ def main():
 
     print("\nJSON saved to crossword_data.json")
     print("\nSecret message letters in order:")
-    for wd in WORDS_DATA:
-        word = wd['word']
-        if word in placed_map:
-            print(f"  {wd['secret']} from {word}")
+    for secret in sorted(SECRET_DATA, key=lambda item: item['order']):
+        print(f"  {secret['letter']} from {secret['word']}[{secret['pos']}]")
 
 if __name__ == '__main__':
     main()
