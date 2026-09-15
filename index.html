@@ -5,39 +5,54 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Varemo Kruiswoordraadsel</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap');
+
   :root {
-    --cell: 38px;
-    --accent: #f5a623;
-    --secret: #ffe066;
-    --secret-border: #e6a800;
-    --correct: #a8e6a1;
-    --wrong: #ffaaaa;
-    --selected: #b3d9ff;
-    --selected-word: #dceeff;
-    --bg: #1a1a2e;
-    --panel: #16213e;
-    --text: #eaeaea;
-    --muted: #8899aa;
+    --cell: 34px;
+    --accent: #8c7a5e;
+    --line: #c8bfb0;
+    --secret: #f4ead8;
+    --secret-border: #8c7a5e;
+    --correct: #dcead8;
+    --wrong: #f3d6d0;
+    --selected: #e3d6c3;
+    --selected-word: #f3ede4;
+    --bg: #f5f2ee;
+    --panel: #ffffff;
+    --text: #1c1a17;
+    --muted: #6b6055;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    font-family: 'Segoe UI', Arial, sans-serif;
+    font-family: 'EB Garamond', Georgia, serif;
     background: var(--bg);
     color: var(--text);
     min-height: 100vh;
-    padding: 16px;
+    padding: 24px 16px 36px;
   }
 
-  header { text-align: center; margin-bottom: 20px; }
-  header h1 {
-    font-size: 1.8rem;
-    color: var(--accent);
-    letter-spacing: 2px;
-    text-shadow: 0 0 20px rgba(245,166,35,0.4);
+  header {
+    position: relative; text-align: center; max-width: 1120px;
+    margin: 0 auto 24px; padding: 20px 28px 18px;
+    background: var(--panel); border: 1px solid var(--line);
   }
-  header p { color: var(--muted); font-size: 0.9rem; margin-top: 6px; }
+  header::before, header::after {
+    content: ''; position: absolute; width: 16px; height: 16px;
+    border-color: var(--accent); border-style: solid;
+  }
+  header::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+  header::after { right: -1px; bottom: -1px; border-width: 0 2px 2px 0; }
+  .eyebrow {
+    color: var(--accent); font-size: 0.72rem; letter-spacing: 0.28em;
+    text-transform: uppercase; margin-bottom: 5px;
+  }
+  header h1 {
+    font-size: 2rem; font-weight: 500; line-height: 1.2;
+    color: var(--text); letter-spacing: 0;
+  }
+  header p:not(.eyebrow) { color: var(--muted); font-size: 1rem; font-style: italic; margin-top: 5px; }
 
   .layout {
     display: flex;
@@ -48,13 +63,13 @@
   }
 
   /* ── GRID ── */
-  .grid-wrap { overflow-x: auto; }
+  .grid-wrap { overflow-x: auto; padding: 14px; background: var(--panel); border: 1px solid var(--line); }
   .grid {
     display: grid;
-    gap: 2px;
-    background: #0a0a1a;
-    border: 3px solid var(--accent);
-    border-radius: 8px;
+    gap: 1px;
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 0;
     padding: 4px;
     width: fit-content;
   }
@@ -63,14 +78,16 @@
     width: var(--cell);
     height: var(--cell);
     position: relative;
-    background: #f0ece4;
-    border-radius: 3px;
+    background: #fff;
+    border: 1px solid var(--accent);
+    border-radius: 0;
     cursor: pointer;
     user-select: none;
   }
   .cell.black {
-    background: #1a1a2e;
-    border-radius: 2px;
+    background: var(--bg);
+    border-color: transparent;
+    border-radius: 0;
     cursor: default;
     pointer-events: none;
   }
@@ -81,8 +98,9 @@
     background: transparent;
     text-align: center;
     font-size: calc(var(--cell) * 0.5);
-    font-weight: bold;
-    color: #222;
+    font-family: inherit;
+    font-weight: 600;
+    color: var(--text);
     text-transform: uppercase;
     cursor: pointer;
     caret-color: transparent;
@@ -94,7 +112,7 @@
     top: 1px; left: 2px;
     font-size: 9px;
     font-weight: bold;
-    color: #444;
+    color: var(--muted);
     line-height: 1;
     pointer-events: none;
     z-index: 2;
@@ -104,24 +122,24 @@
     top: 1px; right: 2px;
     font-size: 8px;
     font-weight: bold;
-    color: #995500;
+    color: var(--accent);
     line-height: 1;
     pointer-events: none;
     z-index: 2;
   }
   .cell.secret { background: var(--secret); box-shadow: 0 0 0 2px var(--secret-border); }
-  .cell.secret input { color: #5a3a00; }
-  .cell.selected  { background: var(--selected)      !important; box-shadow: 0 0 0 2px #2288ff !important; }
+  .cell.secret input { color: var(--text); }
+  .cell.selected  { background: var(--selected) !important; box-shadow: inset 0 0 0 2px var(--accent) !important; }
   .cell.selected-word { background: var(--selected-word) !important; }
-  .cell.secret.selected-word { background: #fff0a0 !important; }
+  .cell.secret.selected-word { background: #eadcc5 !important; }
   .cell.correct   { background: var(--correct) !important; }
   .cell.wrong     { background: var(--wrong)   !important; }
 
   /* ── CLUES PANEL ── */
   .clues {
     background: var(--panel);
-    border: 1px solid #2a3a5a;
-    border-radius: 10px;
+    border: 1px solid var(--line);
+    border-radius: 0;
     padding: 14px;
     min-width: 260px;
     max-width: 310px;
@@ -130,9 +148,9 @@
   }
   .clues h2 {
     font-size: 1rem;
-    color: var(--accent);
+    color: var(--text);
     margin-bottom: 8px;
-    border-bottom: 1px solid #2a3a5a;
+    border-bottom: 1px solid var(--line);
     padding-bottom: 6px;
   }
 
@@ -142,8 +160,8 @@
     transition: background 0.15s;
     overflow: hidden;
   }
-  .clue-item:hover { background: #1e3060; }
-  .clue-item.active { background: #1e4080; }
+  .clue-item:hover { background: #faf8f5; }
+  .clue-item.active { background: #eee6da; }
 
   .clue-row {
     display: flex;
@@ -153,7 +171,7 @@
     cursor: pointer;
   }
   .clue-row .num {
-    font-weight: bold;
+    font-weight: 600;
     color: var(--accent);
     min-width: 22px;
     font-size: 0.82rem;
@@ -168,7 +186,7 @@
 
   /* Music play button */
   .play-btn {
-    background: #1DB954;
+    background: var(--accent);
     border: none;
     border-radius: 50%;
     width: 28px;
@@ -182,8 +200,8 @@
     transition: transform 0.15s, background 0.15s;
     color: #fff;
   }
-  .play-btn:hover { transform: scale(1.12); background: #1ed760; }
-  .play-btn.playing { background: #e04040; }
+  .play-btn:hover { transform: scale(1.08); background: #6f604a; }
+  .play-btn.playing { background: #8d4f43; }
   .play-btn.loading { background: #888; cursor: wait; }
 
   /* Spotify speler is onzichtbaar maar in het viewport (opacity:0 zodat de API werkt) */
@@ -205,12 +223,12 @@
     max-width: 680px;
     margin: 24px auto 0;
     background: var(--panel);
-    border: 2px solid var(--accent);
-    border-radius: 12px;
+    border: 1px solid var(--line);
+    border-radius: 0;
     padding: 18px 20px;
     text-align: center;
   }
-  .secret-section h2 { color: var(--accent); font-size: 1rem; margin-bottom: 4px; }
+  .secret-section h2 { color: var(--text); font-size: 1.15rem; font-weight: 500; margin-bottom: 4px; }
   .secret-section p.hint { color: var(--muted); font-size: 0.78rem; margin-bottom: 14px; }
 
   .secret-letters {
@@ -226,15 +244,15 @@
     width: 32px; height: 32px;
     background: var(--secret);
     border: 2px solid var(--secret-border);
-    border-radius: 5px;
+    border-radius: 0;
     font-size: 1.1rem; font-weight: bold;
-    color: #5a3a00;
+    color: var(--text);
     display: flex; align-items: center; justify-content: center;
     transition: all 0.3s;
   }
   .secret-box .sletter.empty {
-    background: #2a2a4a;
-    border-color: #3a3a6a;
+    background: #faf8f5;
+    border-color: var(--line);
     color: transparent;
   }
   .secret-word {
@@ -259,8 +277,8 @@
   .btn-check:hover  { background: #ffbb44; transform: translateY(-1px); }
   .btn-reveal { background: #2a4a8a; color: #eaeaea; }
   .btn-reveal:hover { background: #3a5aaa; }
-  .btn-reset  { background: #3a2a2a; color: #ddaaaa; }
-  .btn-reset:hover  { background: #4a3030; }
+  .btn-reset  { background: #faf8f5; color: var(--muted); border: 1px solid var(--line) !important; }
+  .btn-reset:hover  { background: #eee6da; color: var(--text); }
 
   .legend {
     display: flex; gap: 12px;
@@ -274,7 +292,7 @@
   .win-msg {
     display: none;
     font-size: 1.4rem; font-weight: bold;
-    color: #44ff88; margin-top: 8px;
+    color: #506f49; margin-top: 8px;
     animation: pulse 1s infinite alternate;
   }
   @keyframes pulse {
@@ -284,7 +302,7 @@
 
   @media (max-width: 600px) {
     :root { --cell: 28px; }
-    body { padding: 8px; }
+    body { padding: 8px 8px 20px; }
     header { margin-bottom: 10px; }
     header h1 { font-size: 1.25rem; letter-spacing: 1px; }
     header p { font-size: 0.8rem; line-height: 1.35; padding: 0 8px; }
@@ -296,7 +314,8 @@
       justify-content: flex-start;
       padding-bottom: 6px;
     }
-    .grid { gap: 1px; padding: 3px; border-width: 2px; border-radius: 5px; }
+    .grid-wrap { padding: 6px; }
+    .grid { gap: 1px; padding: 3px; border-width: 1px; border-radius: 0; }
     .cell { border-radius: 1px; }
     .cell input { padding-top: 3px; font-size: max(10px, calc(var(--cell) * 0.5)); }
     .cell .clue-num { top: 1px; left: 1px; font-size: max(5px, calc(var(--cell) * 0.24)); }
@@ -304,7 +323,7 @@
     .layout > div:last-child { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 12px; }
     .clues {
       min-width: 0; max-width: none; width: 100%; max-height: none;
-      padding: 10px; border-radius: 8px;
+      padding: 10px; border-radius: 0;
     }
     #cluesDown { margin-top: 0 !important; }
     .clue-row { min-height: 44px; padding: 7px 5px; }
@@ -325,7 +344,8 @@
 <body>
 
 <header>
-  <h1>🎵 Varemo Kruiswoordraadsel 🎵</h1>
+  <p class="eyebrow">Varemo · Muziekopdracht</p>
+  <h1>Varemo Kruiswoordraadsel</h1>
   <p>Druk op 🎵 bij elke aanwijzing om het liedje te beluisteren — de ★-vakjes geven een geheim bericht!</p>
 </header>
 
@@ -785,6 +805,7 @@ setTimeout(() => {
     selectedCell = {r: first.row, c: first.col};
     selectWord(first);
     document.getElementById(`c${first.row}_${first.col}`)?.querySelector('input')?.focus();
+    window.scrollTo({top: 0, behavior: 'instant'});
   }
 }, 100);
 </script>
